@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QCARConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="qcar_config.xsd">
+  <Tracking>
+    <ImageTarget name="wallet_target" size="1.000000 1.508100" />
+    <ImageTarget name="tooth_target" size="1.000000 1.536513" />
+    <ImageTarget name="cocaine_target" size="1.000000 1.532042" />
+    <ImageTarget name="diamont_target" size="1.000000 1.528889" />
+    <ImageTarget name="ring_target" size="1.000000 1.514925" />
+    <ImageTarget name="trollex_target" size="1.000000 1.558779" />
+    <ImageTarget name="bladder_target" size="1000.000000 1535.232422" />
+    <ImageTarget name="kydneys_target" size="1000.000000 1540.540527" />
+    <ImageTarget name="pancreas_target" size="1000.000000 1497.050171" />
+    <ImageTarget name="liver_target" size="1000.000000 1514.749268" />
+    <ImageTarget name="stomach_target" size="1000.000000 1537.313477" />
+    <ImageTarget name="spleen_target" size="1000.000000 1530.280640" />
+    <ImageTarget name="thymus_target" size="1000.000000 1533.531982" />
+    <ImageTarget name="lungs_target" size="1000.000000 1528.974731" />
+    <ImageTarget name="heart_target" size="1000.000000 1525.073730" />
+    <ImageTarget name="brain_target" size="1000.000000 1534.954468" />
+  </Tracking>
+</QCARConfig>
