@@ -6,22 +6,36 @@ using Vuforia;
 
 public class Functions : MonoBehaviour
 {
+
+    //UI
     public GameObject main_buttons;
     public GameObject return_button;
     public ParticleSystem particles;
     public Text text_points;
     public Text text_bidcoins;
 
+    //Adding
     public List<Organ> organs_posession;
     public List<MyObject> objects_posession;
     private Organ organ_active;
     private MyObject object_active;
+    public Text text_message_error;
     private bool adding;
     private bool targeted;
+
+    //Points
     private int bidcoins;
     private int points;
     private int extra_bonus;
     private int super_extra_bonus;
+    
+    //Auction
+    private List<Organ> organs_to_auction;
+    public InputField auction_price;
+    public Text text_aucting;
+    public Text text_price;
+    private bool aucting;
+    private bool organ_choiced;
 
     // Start is called before the first frame update
     void Start()
@@ -34,6 +48,10 @@ public class Functions : MonoBehaviour
         points = 0;
         extra_bonus = 5;
         super_extra_bonus = 10;
+
+        organs_to_auction = new List<Organ>();
+        aucting = false;
+        organ_choiced = false;
     }
 
     // Update is called once per frame
@@ -46,45 +64,95 @@ public class Functions : MonoBehaviour
             else
                 object_active.gameObject.SetActive(true);
             targeted = true;
+            text_message_error.text = "Touch it to add!";
         }
             
-        if (organ_active && organ_active.PickInput())
+        if (adding && organ_active && organ_active.PickInput())
             AddOrgan(organ_active);
-        else if (object_active && object_active.PickInput())
+        else if (adding && object_active && object_active.PickInput())
             AddObject(object_active);
+
+        if (aucting && !organ_choiced)
+        {
+            foreach (var organ in organs_to_auction)
+            {
+                if (organ.PickInput())
+                {
+                    foreach (var organ_poss in organs_posession)
+                    {
+                        if(organ.order == organ_poss.order)
+                        {
+                            organ_active = organ_poss;
+                            organ_choiced = true;
+                        }
+                    }
+                }
+            }
+        }
+        else if(aucting && organ_active && !organ_active.gameObject.activeSelf)
+        {
+            organ_active.gameObject.SetActive(true);
+            foreach (var organ in organs_to_auction)
+            {
+                Destroy(organ.gameObject);
+            }
+            organs_to_auction.Clear();
+            SelectPrice();
+        }
+            
     }
 
+    #region menu_buttons
     public void ReturnToMainMenu()
     {
         main_buttons.SetActive(true);
         return_button.SetActive(false);
-        if(organ_active)
-            organ_active.gameObject.SetActive(false);
-        if(object_active)
-            object_active.gameObject.SetActive(false);
-        adding = false;
-        targeted = false;
-    }
 
-    #region menu_buttons
+        //Add
+        if(adding)
+        {
+            if (organ_active)
+                organ_active.gameObject.SetActive(false);
+            if (object_active)
+                object_active.gameObject.SetActive(false);
+            
+            text_message_error.text = "";
+            adding = false;
+            targeted = false;
+        }
+        
+        //Auction
+        if(aucting)
+        {
+            aucting = false;
+            organ_choiced = false;
+            foreach (var organ in organs_to_auction)
+            {
+                Destroy(organ.gameObject);
+            }
+            organs_to_auction.Clear();
+            text_aucting.gameObject.SetActive(false);
+            organ_active = null;
+        }
+    }
+    
     public void ActivateTracker()
     {
         main_buttons.SetActive(false);
         return_button.SetActive(true);
         adding = true;
+        text_message_error.text = "No target on camera";
     }
 
     public void AuctionOrgan()
     {
+        main_buttons.SetActive(false);
+        return_button.SetActive(true);
+        aucting = true;
         SelectOrganToAuction();
     }
 
-    public void SendOrgan()
-    {
-
-    }
-
-    void RefreshFinalScore()
+    public void RefreshFinalScore()
     {
 
     }
@@ -110,6 +178,9 @@ public class Functions : MonoBehaviour
     {
         if (organ_active)
             organ_active.gameObject.SetActive(false);
+
+        if(adding)
+            text_message_error.text = "No target on camera";
         targeted = false;
         organ_active = null;
     }
@@ -126,26 +197,64 @@ public class Functions : MonoBehaviour
 
     public void ActiveObject(MyObject _object)
     {
+        if (object_active)
+            object_active.gameObject.SetActive(false);
         object_active = _object;
     }
 
     public void DesactiveObject()
     {
-        object_active.gameObject.SetActive(false);
+        if(object_active)
+            object_active.gameObject.SetActive(false);
+
+        if (adding)
+            text_message_error.text = "No target on camera";
         targeted = false;
         object_active = null;
     }
     #endregion
 
-    #region action_organ
+    #region auction_organ
     void SelectOrganToAuction()
     {
-        //Vector3 position = new Vector3(_organ.image.transform.position.x + (110 * _same_organ_count), _organ.image.transform.position.y, _organ.image.transform.position.z);
-        //GameObject image_copia = Instantiate(Resources.Load<GameObject>("Prefabs/Organs_Images/" + _organ.image.name), position, _organ.image.transform.rotation, _organ.image.transform);
-        //image_copia.GetComponent<UnityEngine.UI.Image>().color = new Color(_organ.image.color.r, 0.5f, 0.5f, 1f);
+        int count_x = 0;
+        int count_y = 0;
+        foreach (var organ in organs_posession)
+        {
+            Organ organ_copia = Instantiate(Resources.Load<Organ>("Models/organs/" + organ.name), organ.transform.parent);
+            organ_copia.gameObject.transform.localScale = new Vector3(organ.gameObject.transform.localScale.x / 2, organ.gameObject.transform.localScale.y / 2, organ.gameObject.transform.localScale.z / 2);
+            organ_copia.transform.localPosition = new Vector3(-0.5f + (0.5f * count_x), 0.5f - (0.5f * count_y), 4);
+            organs_to_auction.Add(organ_copia);
+            count_x++;
+            if(count_x > 2)
+            {
+                count_x = 0;
+                count_y++;
+            }
+        }
+    }
+
+    void SelectPrice()
+    {
+        text_aucting.gameObject.SetActive(true);
+        text_aucting.text = "Put the price that you consider convenient for the initial bid.";
+        auction_price.gameObject.SetActive(true);
+        text_price.gameObject.SetActive(true);
+        if (organ_active)
+        {
+            organ_active.gameObject.SetActive(true);
+            organ_active.gameObject.transform.localScale = organ_active.gameObject.transform.localScale/2;
+        }
+    }
+
+    void StartAuction()
+    {
+        return_button.SetActive(false);
+        text_aucting.text = "Auction opens, " + organ_active.gameObject.name + " bid starts on " + auction_price + " bidcoins. \nWho gives " + auction_price + "?";
     }
     #endregion
 
+    #region points
     void RecalculateScore(Organ _organ = null, MyObject _object = null)
     {
         bool have_organ = false;
@@ -188,7 +297,7 @@ public class Functions : MonoBehaviour
         //Points
         if (!have_organ)
             points = CountScale();
-        points = points + (objects_posession.Count * 4);
+        points = points + (objects_posession.Count * 3);
         text_points.text = "Score: " + points + "0000";
 
         RecalculateBidcoins();
@@ -196,7 +305,7 @@ public class Functions : MonoBehaviour
 
     void RecalculateBidcoins()
     {
-        bidcoins = (objects_posession.Count * 4);
+        bidcoins = (objects_posession.Count * 3);
         text_bidcoins.text = "Money: " + bidcoins + "0000";
     }
 
@@ -228,6 +337,7 @@ public class Functions : MonoBehaviour
         else
             return (scale_count * 4) + super_extra_bonus;
     }
+    #endregion
 
     void PrintOrganImage(Organ _organ, int _same_organ_count, bool _have_organ)
     {
