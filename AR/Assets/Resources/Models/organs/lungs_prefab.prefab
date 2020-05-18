@@ -47,6 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   image: {fileID: 0}
   order: 3
+  organ_name: Lungs
 --- !u!65 &6863121320070912975
 BoxCollider:
   m_ObjectHideFlags: 0

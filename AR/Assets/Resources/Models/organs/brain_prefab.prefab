@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8324174943052328720}
   - component: {fileID: 771029425496900173}
   m_Layer: 0
-  m_Name: brain
+  m_Name: brain_prefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -47,6 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   image: {fileID: 0}
   order: 1
+  organ_name: Brain
 --- !u!65 &771029425496900173
 BoxCollider:
   m_ObjectHideFlags: 0

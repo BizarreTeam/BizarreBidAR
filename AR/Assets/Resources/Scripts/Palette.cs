@@ -1,13 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class Organ : MonoBehaviour
+public class Palette : MonoBehaviour
 {
-    public Image image;
-    public int order;
-    public string organ_name;
     private int distance;
     // Start is called before the first frame update
     void Start()
@@ -18,8 +14,7 @@ public class Organ : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //RotateOrgan
-        transform.Rotate(new Vector3(0,1,0), 20 * Time.deltaTime);
+        
     }
 
     public bool PickInput()
@@ -29,7 +24,7 @@ public class Organ : MonoBehaviour
         {
             //create a ray cast and set it to the mouses cursor position in game
             Ray ray;
-            if(Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0))
                 ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             else
                 ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
