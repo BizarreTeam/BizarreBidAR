@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7799048905644661694}
   - component: {fileID: 5711460490931941059}
   m_Layer: 0
-  m_Name: 20k
+  m_Name: 20k_prefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e822d3d01d686f428183b8f665514c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  value: 20000
+  value: 2
 --- !u!65 &5711460490931941059
 BoxCollider:
   m_ObjectHideFlags: 0

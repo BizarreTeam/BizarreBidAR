@@ -21,12 +21,14 @@ public class Functions : MonoBehaviour
     public List<MyObject> objects_posession;
     private Organ organ_active;
     private MyObject object_active;
+    private Money money_active;
     public Text text_message_error;
     private bool adding;
     private bool targeted;
 
     //Points
     private int bidcoins;
+    private int bidcoins_auction;
     private int points;
     private int extra_bonus;
     private int super_extra_bonus;
@@ -54,6 +56,7 @@ public class Functions : MonoBehaviour
         adding = false;
         targeted = false;
         bidcoins = 0;
+        bidcoins_auction = 0;
         points = 0;
         extra_bonus = 5;
         super_extra_bonus = 10;
@@ -70,12 +73,15 @@ public class Functions : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if ((organ_active|| object_active) && adding && !targeted)
+        if ((organ_active|| object_active || money_active) && adding && !targeted)
         {
             if(organ_active)
                 organ_active.gameObject.SetActive(true);
-            else
+            else if(object_active)
                 object_active.gameObject.SetActive(true);
+            else
+                money_active.gameObject.SetActive(true);
+
             targeted = true;
             text_message_error.text = "Touch it to add!";
         }
@@ -84,7 +90,10 @@ public class Functions : MonoBehaviour
             AddOrgan(organ_active);
         else if (adding && object_active && object_active.PickInput())
             AddObject(object_active);
+        else if (adding && money_active && money_active.PickInput())
+            AddMoney(money_active);
 
+        //Aucting
         if (aucting && !organ_choiced)
         {
             foreach (var organ in organs_to_auction)
@@ -116,6 +125,9 @@ public class Functions : MonoBehaviour
         }
         else if (aucting && aucting_update)
         {
+            if(palette_active && !palette_active.gameObject.activeSelf)
+                palette_active.gameObject.SetActive(true);
+
             if (palette_active && palette_active.PickInput())
                 AddPalette(palette_active);
 
@@ -149,6 +161,7 @@ public class Functions : MonoBehaviour
         {
             aucting = false;
             organ_choiced = false;
+            aucting_update = false;
             foreach (var organ in organs_to_auction)
             {
                 Destroy(organ.gameObject);
@@ -234,6 +247,7 @@ public class Functions : MonoBehaviour
     {
         ThrowParticles();
         RecalculateScore(null, _object);
+        RecalculateBidcoins();
         ReturnToMainMenu();
         DesactiveObject();
     }
@@ -257,6 +271,35 @@ public class Functions : MonoBehaviour
     }
     #endregion
 
+    #region pick_object
+    public void AddMoney(Money _money)
+    {
+        ThrowParticles();
+        bidcoins_auction += _money.value;
+        RecalculateBidcoins();
+        ReturnToMainMenu();
+        DesactiveMoney();
+    }
+
+    public void ActiveMoney(Money _money)
+    {
+        if (money_active)
+            money_active.gameObject.SetActive(false);
+        money_active = _money;
+    }
+
+    public void DesactiveMoney()
+    {
+        if (money_active)
+            money_active.gameObject.SetActive(false);
+
+        if (adding)
+            text_message_error.text = "No target on camera";
+        targeted = false;
+        money_active = null;
+    }
+    #endregion
+
     #region pick_palette
     public void AddPalette(Palette _palette)
     {
@@ -270,6 +313,7 @@ public class Functions : MonoBehaviour
         if (palette_active)
             palette_active.gameObject.SetActive(false);
         palette_active = _palette;
+        
     }
 
     public void DesactivePalette()
@@ -323,13 +367,13 @@ public class Functions : MonoBehaviour
         text_price.gameObject.SetActive(false);
         aucting_update = true;
         time_aucting = (int)Time.time;
-        my_time = 5;
+        my_time = 100;
         price = int.Parse(auction_price.text);
     }
 
     void UpdateAuction()
     {
-        if (my_time == 5 && time_aucting + 3 < Time.time)
+        if (my_time == 100 && time_aucting + 3 < Time.time)
         {
             my_time--;
             text_aucting.text = "Who gives " + price.ToString() + "0.000?";
@@ -342,7 +386,7 @@ public class Functions : MonoBehaviour
                 organ_active.gameObject.SetActive(false);
             }
         }
-        else if (my_time != 5 && time_aucting + 1 < Time.time)
+        else if (my_time != 100 && time_aucting + 1 < Time.time)
         {
             my_time--;
             text_aucting_time.text = my_time.ToString();
@@ -356,14 +400,25 @@ public class Functions : MonoBehaviour
     {
         if (price > int.Parse(auction_price.text))
         {
+            int count = 0;
+            int same_organ = 0;
             foreach (var organ in organs_posession)
             {
-                if (organ_active.order == organ.order)
+                if (organ_active.order == organ.order && (!organs_posession[count + 1] || (organs_posession[count + 1] && organs_posession[count + 1].order != organ_active.order )))
                 {
+                    RemoveOrganImage(organ, same_organ, same_organ != 0);
+                    bidcoins_auction += price;
                     organs_posession.Remove(organ);
+                    RecalculateBidcoins();
                     break;
                 }
+                else if(organ_active.order == organ.order && (organs_posession[count + 1] && organs_posession[count + 1].order == organ_active.order))
+                {
+                    same_organ++;
+                }
+                count++;
             }
+            
             organ_active.gameObject.transform.localScale = organ_active.gameObject.transform.localScale * 2f;
             organ_active.gameObject.SetActive(false);
             organ_active = null;
@@ -379,7 +434,7 @@ public class Functions : MonoBehaviour
     {
         price = price + 1;
         text_aucting.text = "NoSeQuienEres gives " + price.ToString() + "0.000!!";
-        my_time = 5;
+        my_time = 10;
     }
     #endregion
 
@@ -426,16 +481,15 @@ public class Functions : MonoBehaviour
         //Points
         if (!have_organ)
             points = CountScale();
-        points = points + (objects_posession.Count * 3);
+        points = points + (objects_posession.Count * 3) + bidcoins_auction;
         text_points.text = "Score: " + points + "0000";
-
-        RecalculateBidcoins();
     }
 
     void RecalculateBidcoins()
     {
-        bidcoins = (objects_posession.Count * 3);
+        bidcoins = bidcoins_auction + (objects_posession.Count * 3);
         text_bidcoins.text = "Money: " + bidcoins + "0000";
+        RecalculateScore();
     }
 
     int CountScale()
@@ -483,6 +537,18 @@ public class Functions : MonoBehaviour
         }
     }
 
+    void RemoveOrganImage(Organ _organ, int _same_organ_count, bool _have_organ)
+    {
+        if (_have_organ)
+        {
+            _organ.image.color = new Color(_organ.image.color.r, _organ.image.color.g, _organ.image.color.b, 0f);
+        }
+        else
+        {
+            _organ.image.color = new Color(_organ.image.color.r, _organ.image.color.g, _organ.image.color.b, 0.19f);
+        }
+    }
+
     void PrintObjectImage(MyObject _object)
     {
          _object.image.color = new Color(_object.image.color.r, _object.image.color.g, _object.image.color.b, 1f);
@@ -490,7 +556,7 @@ public class Functions : MonoBehaviour
 
     void ThrowParticles()
     {
-        if (particles_organ && organ_active)
+        if (particles_organ && organ_active && adding)
             particles_organ.Play();
         else if (particles_object && object_active)
             particles_object.Play();

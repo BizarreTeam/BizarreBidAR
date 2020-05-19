@@ -1,22 +1,12 @@
 fileFormatVersion: 2
-guid: f51da01c1b14a7a4fb968b4d6bf106f5
+guid: 5f5b2f309d50da944aa700bd20116bed
 ModelImporter:
   serializedVersion: 19300
   internalIDToNameTable:
   - first:
       74: 1827226128182048838
     second: Take 001
-  externalObjects:
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: ReproductiveSystem_bump
-    second: {fileID: 2800000, guid: 60e2ea79c48beed43a8b5b31b848fee1, type: 3}
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: ReproductiveSystem_diffuse
-    second: {fileID: 2800000, guid: a4506992cf027d74c82bb67763adfeae, type: 3}
+  externalObjects: {}
   materials:
     materialImportMode: 1
     materialName: 0

@@ -1,22 +1,12 @@
 fileFormatVersion: 2
-guid: 17d24b6e94ebaea46a59eb42b7acf01d
+guid: cedc61e54e1fb8247831eab8ecf0ce7d
 ModelImporter:
   serializedVersion: 19300
   internalIDToNameTable:
   - first:
       74: 1827226128182048838
     second: Take 001
-  externalObjects:
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: UrinarySystem_bump
-    second: {fileID: 2800000, guid: 715d9a5779beec849a22abe151eb65f6, type: 3}
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: UrinarySystem_diffuse
-    second: {fileID: 2800000, guid: 8146d9c8354d1eb47a44c75affda6ca6, type: 3}
+  externalObjects: {}
   materials:
     materialImportMode: 1
     materialName: 0
