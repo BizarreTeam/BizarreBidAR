@@ -392,7 +392,7 @@ public class Functions : MonoBehaviour
             text_aucting_time.text = my_time.ToString();
             time_aucting = (int)Time.time;
         }
-        else if (my_time == 0)
+        else if (my_time <= 0)
             FinishAuction();
     }
 
