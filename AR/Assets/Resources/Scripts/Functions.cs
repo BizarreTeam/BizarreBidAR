@@ -367,13 +367,13 @@ public class Functions : MonoBehaviour
         text_price.gameObject.SetActive(false);
         aucting_update = true;
         time_aucting = (int)Time.time;
-        my_time = 100;
+        my_time = 10;
         price = int.Parse(auction_price.text);
     }
 
     void UpdateAuction()
     {
-        if (my_time == 100 && time_aucting + 3 < Time.time)
+        if (my_time == 10 && time_aucting + 3 < Time.time)
         {
             my_time--;
             text_aucting.text = "Who gives " + price.ToString() + "0.000?";
@@ -386,7 +386,7 @@ public class Functions : MonoBehaviour
                 organ_active.gameObject.SetActive(false);
             }
         }
-        else if (my_time != 100 && time_aucting + 1 < Time.time)
+        else if (my_time != 10 && time_aucting + 1 < Time.time)
         {
             my_time--;
             text_aucting_time.text = my_time.ToString();
@@ -488,7 +488,7 @@ public class Functions : MonoBehaviour
     void RecalculateBidcoins()
     {
         bidcoins = bidcoins_auction + (objects_posession.Count * 3);
-        text_bidcoins.text = "Money: " + bidcoins + "0000";
+        text_bidcoins.text = " " + bidcoins + "0000";
         RecalculateScore();
     }
 
